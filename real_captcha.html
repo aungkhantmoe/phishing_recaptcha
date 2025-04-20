@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form with reCAPTCHA</title>
+    <!-- Load the reCAPTCHA API with your site key -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            color: #3a3a3a;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .login-header p {
+            color: #888;
+            margin-top: 8px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            border-color: #4a6cf7;
+            outline: none;
+        }
+        
+        .recaptcha-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .login-button {
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 15px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .login-button:hover {
+            background-color: #3a5ce5;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #777;
+        }
+        
+        .login-footer a {
+            color: #4a6cf7;
+            text-decoration: none;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            text-align: center;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: rgba(46, 204, 113, 0.1);
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Welcome Back</h1>
+            <p>Enter your credentials to access your account</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+                <div class="error-message" id="username-error"></div>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error-message" id="password-error"></div>
+            </div>
+            
+            <!-- Real reCAPTCHA widget with your site key -->
+            <div class="recaptcha-container">
+                <div class="g-recaptcha" data-sitekey="ENTER YOUR SITE KEY"></div>
+                <div class="error-message" id="recaptcha-error"></div>
+            </div>
+            
+            <button type="submit" class="login-button">Log In</button>
+            
+            <div class="success-message" id="success-message">
+                Login successful! Welcome back.
+            </div>
+        </form>
+        
+        <div class="login-footer">
+            <p>Don't have an account? <a href="#">Sign up</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Hardcoded credentials (for demonstration only)
+        const validUsername = "admin";
+        const validPassword = "password";
+        
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(function(el) {
+                el.style.display = 'none';
+            });
+            document.getElementById('success-message').style.display = 'none';
+            
+            // Get form values
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const recaptchaResponse = grecaptcha.getResponse();
+            
+            let isValid = true;
+            
+            // Validate username
+            if (username === '') {
+                document.getElementById('username-error').textContent = 'Username is required';
+                document.getElementById('username-error').style.display = 'block';
+                isValid = false;
+            } else if (username !== validUsername) {
+                document.getElementById('username-error').textContent = 'Invalid username';
+                document.getElementById('username-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate password
+            if (password === '') {
+                document.getElementById('password-error').textContent = 'Password is required';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            } else if (password !== validPassword) {
+                document.getElementById('password-error').textContent = 'Invalid password';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate reCAPTCHA
+            if (recaptchaResponse.length === 0) {
+                document.getElementById('recaptcha-error').textContent = 'Please complete the reCAPTCHA verification';
+                document.getElementById('recaptcha-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // If all validations pass
+            if (isValid) {
+                window.location.href = 'success.html'; 
+            }
+        });
+    </script>
+</body>
+</html>
