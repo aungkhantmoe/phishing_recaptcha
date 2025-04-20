@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Welcome Admin</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .header {
+            background-color: #4a6cf7;
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            margin-bottom: 10px;
+            font-size: 22px;
+            color: #333;
+        }
+
+        .card p {
+            color: #777;
+            font-size: 16px;
+        }
+
+        .icon {
+            font-size: 40px;
+            color: #4a6cf7;
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .logout-button {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+
+    <!-- Add simple icons using FontAwesome CDN -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <div class="header">
+        Welcome, Admin — Your Dashboard
+    </div>
+
+    <div class="dashboard">
+        <div class="card">
+            <div class="icon"><i class="fas fa-users"></i></div>
+            <h2>User Management</h2>
+            <p>View and manage all registered users.</p>
+        </div>
+        <div class="card">
+            <div class="icon"><i class="fas fa-chart-line"></i></div>
+            <h2>Analytics</h2>
+            <p>Track login trends and usage stats.</p>
+        </div>
+        <div class="card">
+            <div class="icon"><i class="fas fa-cogs"></i></div>
+            <h2>Settings</h2>
+            <p>Configure system preferences and more.</p>
+        </div>
+        <div class="card">
+            <div class="icon"><i class="fas fa-bell"></i></div>
+            <h2>Notifications</h2>
+            <p>View system alerts and announcements.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="real_captcha.html" class="logout-button">Log Out</a>
+    </div>
+
+</body>
+</html>
