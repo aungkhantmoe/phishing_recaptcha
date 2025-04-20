@@ -9,9 +9,16 @@ Credits to John Hammonf: https://github.com/JohnHammond/recaptcha-phish
 
 
 ### Real
+
+Does what a normal website would do, ensure user is not a bot and logging in would take user to the website.
+
+
 ![real](https://github.com/user-attachments/assets/54879472-2275-4f9b-8963-40b7df631c9a)
 
 
 
 ### Phishing 
+
+Instruct user to perform a set of actions, to enter a command into user's powershell which eventually download the payload.
+
 ![fake](https://github.com/user-attachments/assets/26ea082c-523d-42ee-87b4-1373889e9e9e)
