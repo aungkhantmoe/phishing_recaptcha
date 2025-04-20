@@ -1,6 +1,12 @@
 # reCAPTCHA Phishing 
 This is an attempt to recreate the reCAPTCHA phishing technique that is seen in the wild. Companies are free to use this as reference to train internal staff.
 
+Instructions:
+- To use just run the HTML files.
+- Dummy login details are as follows --usrname:admin --pw:password
+- Please change the data-sitekey to your own in real_captcha.html for the reCAPTCHA to work (get it from google)
+
+
 Credits to John Hammond: https://github.com/JohnHammond/recaptcha-phish
 
 # Comparison between real and phishing reCAPTCHA
