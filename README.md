@@ -1,7 +1,7 @@
 # reCAPTCHA Phishing 
 This is an attempt to recreate the reCAPTCHA phishing technique that is seen in the wild. Companies are free to use this as reference to train internal staff.
 
-Credits to John Hammonf: https://github.com/JohnHammond/recaptcha-phish
+Credits to John Hammond: https://github.com/JohnHammond/recaptcha-phish
 
 # Comparison between real and phishing reCAPTCHA
 
